@@ -15,7 +15,7 @@ apiAndLicenseSecretExists: true
 image:
   repository: ghcr.io/nirmata/nirmata-kyverno-operator
   # Defaults to chart appVersion
-  tag:
+  tag: v0.3.12
   pullPolicy: IfNotPresent
   pullSecrets:
     registry: ghcr.io
