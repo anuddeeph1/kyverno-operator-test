@@ -42,7 +42,7 @@ certManager: operator
 
 # Component configurations
 kyverno:
-  customNamespaces: true
+  #customNamespaces: true
   createCR: true
   enablePolicyExceptions: true
   replicaCount:
