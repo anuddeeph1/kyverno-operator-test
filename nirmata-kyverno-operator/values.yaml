@@ -6,7 +6,7 @@ profile: "prod"
 
 cloudPlatform: ""
 
-namespace:
+namespace: nirmata-system
 
 replicaCount: 1
 
