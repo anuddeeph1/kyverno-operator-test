@@ -9,6 +9,7 @@ cloudPlatform: ""
 namespace: nirmata-system
 
 replicaCount: 1
+apiAndLicenseSecretExists: true
 
 envVars: []
 
@@ -36,12 +37,13 @@ rbac:
     # If not set and create is true, a name is generated using the fullname template
     name: ""
 
-enableWebhook: true
+enableWebhook: false
 # Whether certificate management is done by "cert-manager", "operator", "other"
 certManager: operator
 
 # Component configurations
 kyverno:
+  customNamespaces: true
   createCR: true
   enablePolicyExceptions: true
   replicaCount:
@@ -129,6 +131,11 @@ kyverno:
 
   # Kyverno Helm Chart customizations other than those already in kyverno CR
   helm:
+    licenseManager:
+      imageTag: v0.1.13
+      secretNS: nirmata-system
+      apiSecret: api-secret
+      licenseSecret: kyverno-license
     apiVersionOverride:
       podDisruptionBudget: "policy/v1"
 
