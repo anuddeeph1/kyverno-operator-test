@@ -25,7 +25,7 @@ image:
   tag: v0.3.12
   pullPolicy: IfNotPresent
   pullSecrets:
-    registry: ghcr.io
+    registry: 844333597536.dkr.ecr.us-west-1.amazonaws.com
     name: image-pull-secret
     create: true
     username: AWS
