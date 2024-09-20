@@ -6,23 +6,30 @@ profile: "prod"
 
 cloudPlatform: ""
 
-namespace: nirmata-system
+namespace: nirmata-system #added ns
+
+globalLabels: {}
+globalAnnotations: {}
+enablePreDeleteHook: true
 
 replicaCount: 1
-apiAndLicenseSecretExists: true
+envVars: []
 
+#added
+predeletehookimage: 844333597536.dkr.ecr.us-west-1.amazonaws.com/nirmata/kubectl:1.29.0
 
+#changed
 image:
-  repository: ghcr.io/nirmata/nirmata-kyverno-operator
+  repository: 844333597536.dkr.ecr.us-west-1.amazonaws.com/nirmata/nirmata-kyverno-operator
   # Defaults to chart appVersion
   tag: v0.3.12
   pullPolicy: IfNotPresent
   pullSecrets:
     registry: ghcr.io
     name: image-pull-secret
-    create: false
-    username:
-    password:
+    create: true
+    username: AWS
+    password: eyJwYXlsb2FkIjoiV3BKVGFZRk9UQWdSUFAzRUFHWDVnSytvbml6b3VTNXhZV1hrT0RnaGRTZVUybDRMYlZjOXpEL2ZCamIwejE4RUdjZGVTMmNDcThjbHJTNC9rVjlTUnNKRFJSTE9rSVlhSDlHVHNsd2hOYys4L3RVTHhnOFdTUFZ6dHpnOGsrTlB6eFBBQSs5a1cxRFhCdnJWMCt1djU0SzhVSmEwTzc4RVQ4dG9CN0RPdit2TVNOSW8rUFZXOUxHdWVsUVdYS0NTeldpcXltaUZBTElHcnRiT1BsSWZmQTdaRXE2TExOTDFVb0ZycmJ3TG5qVGxlQStFc2w3NENqTjVJa3NabHRrNEFsUU1mUmxDeTFjNDVVT0Vzejh2djhVQUM2ekM4K0puRjU5TFJDVm9ZK0kyV0tieWZtVVVUeEpJRVpvdlRnMTZTYmUrNmQzZzZNZUpxRHlpSTNBTjJTSlpmSzdvYmVNSnM3aVZOWk5oSWJFVFpxNUQvclNhVWhyR0J3UVplbVlGTXZYSEc0NzBCY3I1UllwbEozamlScTg0SG8vM1l6MW9DYlpBcTJxYVVQY1JSaG9pZUZIYW50Q3lmQnV6V0F4UjUxQVVnK0RVRUljZmdMZUxmaE1BbzA0OFNtMnRCUVlsQllHeklXQmovU1h4Kzg4ci9VY29IL3hXZjBudTl5TElNclEzUjhFVXpjTndoZGhKbU9iWEpOYUlJclRNNWI2OURVbFF5MmRBNzl1eUtTai9pOVR3aTI4VVcyeGxsZExsSEdoQ1hnMEJvdENVSTk5TFBoK1lIUE93RnpMTkVrZ2lPVHpuK05HQ0lJMzdWVlZ6L2xlSHhsYTFuZjRNaTdyZWxXcUMweDlOcnNheGZQalJYMlN2czB1ckM3b1lxYmRpamJTRmx6NFIzTWF0cGdvaStOM21sb0JnNVR2OWxlMmZ0V2YvS1BmN1RKbnlNZTZVOUlSd3VDQTZsb2dQckhpdGp6dWp1SldhQ0ZJclcyYmRjcEtFLzhjY3N1WTZnQ1FXc05nQXdkOWV5a1dQUWRTRTZSak0vWlcrSnVuYzdQZkh2ZTNCMjEvY1d5OE11Q1JhbDZNemwwRDZpa2pnTGlIdHd2dHFEY0VrTnZKU2xNT3BSM2FRZWtiMXZ4SERiLzNvc0d5QTR2L3dDKzV3Umc0bEd3YnZJV042bWtxY0R0UFlzNjJBaWhLdDNKbmZOV05SUnNJbm4xS1I4YldHOWJlL0xZNzJGa1ZHSGRrOExaUlVscjYvRkYxZlBSS0ZCUnBZVGdpQ05oSy9QUTVhTlRjcTRJSW5yMkdmay9pb1NHK09mY3VMOXR2Y0pIREoyd0xhNm5oN0x0N0h5eHBxIiwiZGF0YWtleSI6IkFRRUJBSGlqRUZYR3dGMWNpcFZPYWNHOHFSbUpvVkJQYXk4TFVVdlU4UkNWVjBYb0h3QUFBSDR3ZkFZSktvWklodmNOQVFjR29HOHdiUUlCQURCb0Jna3Foa2lHOXcwQkJ3RXdIZ1lKWUlaSUFXVURCQUV1TUJFRUROU0R3czZIeTB1ZG9ETzBad0lCRUlBN1FlNzZDTTBTaG50S1RPaWRKd3RKSW1oTWcwQ1FnUVdUMExQVGZKMVhFS1grbGJTajN0QlFJQ1pqMk9obTI2SXZ3MVF1ZVhMdldaTDlydjA9IiwidmVyc2lvbiI6IjIiLCJ0eXBlIjoiREFUQV9LRVkiLCJleHBpcmF0aW9uIjoxNzI2ODkxMzY4fQ==
 
 rbac:
   create: true
@@ -36,13 +43,16 @@ rbac:
     # If not set and create is true, a name is generated using the fullname template
     name: ""
 
+#changed to false
 enableWebhook: false
 # Whether certificate management is done by "cert-manager", "operator", "other"
 certManager: operator
 
+# set to true if secret is being provided for licenseManager, and set the name under helm.licenseManager.apiSecret/helm.licenseManager.licenseSecret
+apiAndLicenseSecretExists: true #changed to true
+
 # Component configurations
 kyverno:
-  #customNamespaces: true
   createCR: true
   enablePolicyExceptions: true
   replicaCount:
@@ -63,6 +73,7 @@ kyverno:
       # -- Extra resource permissions to add in the cluster role
       extraResources: []
   admissionController:
+    replicas: ~
     rbac:
       create: true
       serviceAccount:
@@ -70,11 +81,19 @@ kyverno:
       clusterRole:
         # -- Extra resource permissions to add in the cluster role
         extraResources: []
+      coreClusterRole:
+        # -- Extra resource permissions to add in the core cluster role.
+        # This was introduced to avoid breaking change in the chart but should ideally be moved in `clusterRole.extraResources`.
+        # @default -- See [values.yaml](values.yaml)
+        extraResources:
   templating:
     enabled: false
-    image: bitnami/kubectl:latest
+    image: 844333597536.dkr.ecr.us-west-1.amazonaws.com/nirmata/kubectl:1.29.0
+    version: ~
+  customNamespaces: false
   webhooksCleanup:
     enable: false
+    enabled: false
   crds:
     install: true
     annotations: {}
@@ -89,6 +108,11 @@ kyverno:
       clusterRole:
         # -- Extra resource permissions to add in the cluster role
         extraResources: []
+      coreClusterRole:
+        # -- Extra resource permissions to add in the core cluster role.
+        # This was introduced to avoid breaking change in the chart but should ideally be moved in `clusterRole.extraResources`.
+        # @default -- See [values.yaml](values.yaml)
+        extraResources:
   reportsController:
     # -- Enable reports controller.
     enabled: true
@@ -100,6 +124,11 @@ kyverno:
       clusterRole:
         # -- Extra resource permissions to add in the cluster role
         extraResources: []
+      coreClusterRole:
+        # -- Extra resource permissions to add in the core cluster role.
+        # This was introduced to avoid breaking change in the chart but should ideally be moved in `clusterRole.extraResources`.
+        # @default -- See [values.yaml](values.yaml)
+        extraResources:
   backgroundController:
     # -- Enable background controller.
     enabled: true
@@ -111,6 +140,11 @@ kyverno:
       clusterRole:
         # -- Extra resource permissions to add in the cluster role
         extraResources: []
+      coreClusterRole:
+        # -- Extra resource permissions to add in the core cluster role.
+        # This was introduced to avoid breaking change in the chart but should ideally be moved in `clusterRole.extraResources`.
+        # @default -- See [values.yaml](values.yaml)
+        extraResources:
   kyverno:
     customLabels: {}
   nameOverride: "kyverno"
@@ -121,26 +155,115 @@ kyverno:
   generatecontrollerExtraResources: []
   image:
     # -- Image repository
-    repository: ghcr.io
+    repository: 844333597536.dkr.ecr.us-west-1.amazonaws.com
     # -- Image tag
-    tag: v1.11.4-n4k.nirmata.3
+    tag: v1.11.4-n4k.nirmata.8
 
   # -- Override default exclude namespaces (default kyverno, kube-system, nirmata, nirmata-system )
   excludedNamespacesForWebhook: []
 
   # Kyverno Helm Chart customizations other than those already in kyverno CR
   helm:
+    admissionController:
+      imagePullSecrets:
+      - name: image-pull-secret
+      initContainer:
+        resources:
+          limits:
+            memory: 256Mi
+          requests:
+            cpu: 10m
+            memory: 128Mi
+      container:
+        resources:
+          limits:
+            memory: 2Gi
+          requests:
+            cpu: 100m
+            memory: 128Mi
+    cleanupController:
+      resources:
+        # -- Pod resource limits
+        limits:
+          memory: 1Gi
+        # -- Pod resource requests
+        requests:
+          cpu: 100m
+          memory: 64Mi
+    reportsController:
+      resources:
+        # -- Pod resource limits
+        limits:
+          memory: 2Gi
+        # -- Pod resource requests
+        requests:
+          cpu: 100m
+          memory: 64Mi
+    backgroundController:
+      image:
+        registry: 844333597536.dkr.ecr.us-west-1.amazonaws.com
+      resources:
+        # -- Pod resource limits
+        limits:
+          memory: 1Gi
+        # -- Pod resource requests
+        requests:
+          cpu: 100m
+          memory: 64Mi
+    features:
+      generateValidatingAdmissionPolicy:
+        # -- Enables the feature
+        enabled: false
+    policyReportsCleanup:
+      enabled: false
+      image:
+        registry: ~
+        repository: ghcr.io/nirmata/kubectl
+        tag: '1.29.1'
+        pullPolicy: ~
+      podSecurityContext: {}
+      securityContext:
+        runAsUser: 65534
+        runAsGroup: 65534
+        runAsNonRoot: true
+        privileged: false
+        allowPrivilegeEscalation: false
+        readOnlyRootFilesystem: true
+        capabilities:
+          drop:
+            - ALL
+        seccompProfile:
+          type: RuntimeDefault
+    apiVersionOverride:
+      podDisruptionBudget: "policy/v1"
     licenseManager:
-      imageTag: v0.1.13
+      imageTag: 0.1.16
       secretNs: nirmata-system
       apiSecret: api-secret
       licenseSecret: kyverno-license
-    apiVersionOverride:
-      podDisruptionBudget: "policy/v1"
+    webhooksCleanup:
+      enabled: false
+      image: 844333597536.dkr.ecr.us-west-1.amazonaws.com/nirmata/kubectl:1.29.0
+    cleanupJobs:
+      admissionReports:
+        image: 844333597536.dkr.ecr.us-west-1.amazonaws.com/nirmata/kubectl
+          tag: '1.29.0'
+      clusterAdmissionReports:
+        image: 844333597536.dkr.ecr.us-west-1.amazonaws.com/nirmata/kubectl
+          tag: '1.29.0'
 
 policies:
   chartRepoUsername:
   policySets: '[]'
+#  Custom Policy sets can be deployed now by specifying a list of extra custom policyset parameters (chartRepo, chartName, version etc.)
+#  so that policysets need not be created manually. Below is an example addition -
+#  customPolicySetCharts:
+#    - chartRepo: https://nirmata.github.io/kyverno-policies
+#      chartName: kubernetes-best-practice-policies
+#      version: 0.2.1
+#      username: user
+#      passwordSecret: nirmata-system/api/Key
+#      name: k8s-best-practices
 
 awsAdapter:
   createCR: false
@@ -195,7 +318,6 @@ cisAdapter:
 
 # Items after this are general chart parameters. Set/Modify as per need.
 imagePullSecrets: []
-
 nameOverride: ""
 fullnameOverride: ""
 
