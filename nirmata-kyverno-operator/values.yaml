@@ -246,12 +246,17 @@ kyverno:
       image: 844333597536.dkr.ecr.us-west-1.amazonaws.com/nirmata/kubectl:1.29.0
     cleanupJobs:
       admissionReports:
-        image: 844333597536.dkr.ecr.us-west-1.amazonaws.com/nirmata/kubectl
+        image: 
+          repository: 844333597536.dkr.ecr.us-west-1.amazonaws.com/nirmata/kubectl
           tag: '1.29.0'
+        imagePullSecrets:
+        - name: image-pull-secret
       clusterAdmissionReports:
-        image: 844333597536.dkr.ecr.us-west-1.amazonaws.com/nirmata/kubectl
+        image:
+          repository: 844333597536.dkr.ecr.us-west-1.amazonaws.com/nirmata/kubectl
           tag: '1.29.0'
-
+        imagePullSecrets:
+        - name: image-pull-secret
 policies:
   chartRepoUsername:
   policySets: '[]'
