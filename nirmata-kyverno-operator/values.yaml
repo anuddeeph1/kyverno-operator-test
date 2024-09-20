@@ -132,7 +132,7 @@ kyverno:
   helm:
     licenseManager:
       imageTag: v0.1.13
-      secretNS: nirmata-system
+      secretNs: nirmata-system
       apiSecret: api-secret
       licenseSecret: kyverno-license
     apiVersionOverride:
