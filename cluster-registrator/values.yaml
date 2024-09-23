@@ -1,0 +1,35 @@
+# Default values for cluster registrator chart
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+nirmataURL: "https://nirmata.io"
+
+createNs: false
+
+cluster:
+  name: test-kyverno-onbording
+  type: "default-policy-manager-type"
+
+#apiToken:
+apiTokenSecret: "api-secret"
+
+nirmataURL: "https://nirmata.io"
+
+proxy:
+  httpProxy: ""
+  httpsProxy: ""
+  noProxy: ""
+
+tlsCert: ""
+
+imageTag: v0.1.4
+
+# Whether registrator should install kube-controller with readonly or read-write permissions.
+# For NDP we provide a read-write-ndp role that has a lot more perms than read-write
+# Roles needed by the kube-controller are ultimately decided based on support in server logic.
+# This parameter can be used as an additional gate for privilege escalation prevention so that
+# we don't provide read-write perms even if yamls downloaded from service need that.
+# Currently simple read-only and read-write flag, but we could have more shorthands for
+# variations such as: * on polexes but read-only on policy-reports, etc.
+controllerPerms: 'read-write'
+
+namespace: nirmata

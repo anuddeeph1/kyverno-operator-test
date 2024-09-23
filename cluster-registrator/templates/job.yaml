@@ -1,0 +1,481 @@
+---
+{{- if .Values.createNs }}
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: {{ .Values.namespace }}
+{{- end }}
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: nirmata-cluster-registrator
+  namespace: {{ .Values.namespace }}
+  labels: {{ include "nirmata-cluster-registrator-chart.labels" . | nindent 4 }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: nirmata:cluster-registrator
+rules:
+  - apiGroups:
+      - ''
+    resources:
+      - namespaces
+    verbs:
+      - create
+  - apiGroups:
+      - rbac.authorization.k8s.io
+    resources:
+      - clusterrolebindings
+      - clusterroles
+    verbs:
+      - create
+  {{- if eq .Values.controllerPerms "read-write-ndp" }}
+  - apiGroups:
+      - ""
+    resources:
+      - bindings
+      - configmaps
+      - endpoints
+      - limitranges
+      - namespaces
+      - nodes
+      - persistentvolumeclaims
+      - persistentvolumeclaims/status
+      - persistentvolumes
+      - pods
+      - replicationcontrollers
+      - replicationcontrollers/scale
+      - resourcequotas
+      - serviceaccounts
+      - services
+      - services/status
+    verbs:
+      - "*"
+  - apiGroups:
+      - admissionregistration.k8s.io
+    resources:
+      - mutatingwebhookconfigurations
+      - validatingwebhookconfigurations
+    verbs:
+      - "*"
+  - apiGroups:
+      - apiextensions.k8s.io
+    resources:
+      - customresourcedefinitions
+    verbs:
+      - "*"
+  - apiGroups:
+      - apiregistration.k8s.io
+    resources:
+      - apiservice
+    verbs:
+      - "*"
+  - apiGroups:
+      - apps
+    resources:
+      - controllerrevisions
+      - daemonsets
+      - daemonsets/status
+      - deployments
+      - deployments/scale
+      - deployments/status
+      - replicasets
+      - replicasets/scale
+      - replicasets/status
+      - statefulsets
+      - statefulsets/scale
+      - statefulsets/status
+    verbs:
+      - "*"
+  - apiGroups:
+      - authentication.k8s.io
+    resources:
+      - tokenreviews
+    verbs:
+      - "*"
+  - apiGroups:
+      - authorization.k8s.io
+    resources:
+      - localsubjectaccessreviews
+      - selfsubjectaccessreviews
+      - selfsubjectrulesreviews
+      - subjectaccessreviews
+    verbs:
+      - "*"
+  - apiGroups:
+      - autoscaling
+    resources:
+      - verticalpodautoscalers
+    verbs:
+      - "*"
+  - apiGroups:
+      - batch
+    resources:
+      - cronjobs
+      - cronjobs/status
+      - jobs
+      - jobs/status
+    verbs:
+      - "*"
+  - apiGroups:
+      - certificates.k8s.io
+    resources:
+      - certificatesigningrequests
+    verbs:
+      - "*"
+  - apiGroups:
+      - coordination.k8s.io
+    resources:
+      - leases
+    verbs:
+      - "*"
+  - apiGroups:
+      - discovery.k8s.io
+    resources:
+      - endpointslices
+    verbs:
+      - "*"
+  - apiGroups:
+      - flowcontrol.apiserver.k8s.io
+    resources:
+      - flowschemas
+      - prioritylevelconfigurations
+    verbs:
+      - "*"
+  - apiGroups:
+      - kyverno.io
+    resources:
+      - "*"
+    verbs:
+      - "*"
+  - apiGroups:
+      - metrics.k8s.io
+    resources:
+      - nodes
+      - pods
+    verbs:
+      - "*"
+  - apiGroups:
+      - networking.k8s.io
+    resources:
+      - ingressclasses
+      - ingresses
+      - ingresses/status
+      - networkpolicies
+    verbs:
+      - "*"
+  - apiGroups:
+      - node.k8s.io
+    resources:
+      - runtimeclasses
+    verbs:
+      - "*"
+  - apiGroups:
+      - policy
+    resources:
+      - poddisruptionbudgets
+      - poddisruptionbudgets/status
+    verbs:
+      - "*"
+  - apiGroups:
+      - rbac.authorization.k8s.io
+    resources:
+      - clusterrolebindings
+      - clusterroles
+      - rolebindings
+      - roles
+    verbs:
+      - "*"
+  - apiGroups:
+      - scheduling.k8s.io
+    resources:
+      - priorityclasses
+    verbs:
+      - "*"
+  - apiGroups:
+      - security.nirmata.io
+    resources:
+      - "*"
+    verbs:
+      - "*"
+  - apiGroups:
+      - snapshot.storage.k8s.io
+    resources:
+      - volumesnapshotclasses
+      - volumesnapshotcontents
+      - volumesnapshots
+    verbs:
+      - "*"
+  {{- end }}
+  {{- if eq .Values.controllerPerms "admin" }}
+  - apiGroups:
+      - "*"
+    resources:
+      - "*"
+    verbs:
+      - "*"
+  {{- end }}
+  {{- if eq .Values.controllerPerms "read-write" }}
+  - apiGroups:
+      - kyverno.io
+    resources:
+      - clusterpolicies
+      - policies
+      - policyexceptions
+      - clustercleanuppolicies
+      - cleanuppolicies
+    verbs:
+      - '*'
+  {{- end }}
+  - apiGroups:
+      - security.nirmata.io
+      - operator.kyverno.io
+      - kyverno.io
+    resources:
+      - '*'
+    verbs:
+      - get
+      - list
+      - watch
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: nirmata:cluster-registrator-nirmata-readonly
+rules:
+- apiGroups:
+  - kyverno.io
+  - operator.kyverno.io
+  - security.nirmata.io
+  resources:
+  - policies
+  - clusterpolicies
+  - cleanuppolicies
+  - clustercleanuppolicies
+  - kyvernoes
+  - kyvernoes/status
+  - policyexceptions
+  - reportchangerequests
+  - clusterreportchangerequests
+  - kyvernooperators/status
+  - kyvernooperators
+  - imagekeys
+  - imagekeys/status
+  - imagekeys/finalizers
+  verbs:
+  - get
+  - watch
+  - list
+- apiGroups:
+  - wgpolicyk8s.io/v1alpha1
+  - wgpolicyk8s.io/v1alpha2
+  resources:
+  - policyreports
+  - clusterpolicyreports
+  verbs:
+  - get
+  - watch
+  - list
+- apiGroups:
+  - '*'
+  resources:
+  - policies
+  - policies/status
+  - clusterpolicies
+  - clusterpolicies/status
+  - policyreports
+  - policyreports/status
+  - clusterpolicyreports
+  - clusterpolicyreports/status
+  - generaterequests
+  - generaterequests/status
+  - reportchangerequests
+  - reportchangerequests/status
+  - clusterreportchangerequests
+  - clusterreportchangerequests/status
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - apiextensions.k8s.io
+  resources:
+  - customresourcedefinitions
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - '*'
+  resources:
+  - nodes
+  - pods
+  - pods/log
+  - namespaces
+  - networkpolicies
+  - secrets
+  - configmaps
+  - resourcequotas
+  - limitranges
+  - deployments
+  - services
+  - serviceaccounts
+  - roles
+  - rolebindings
+  - clusterroles
+  - clusterrolebindings
+  - events
+  - mutatingwebhookconfigurations
+  - validatingwebhookconfigurations
+  - certificatesigningrequests
+  - certificatesigningrequests/approval
+  - poddisruptionbudgets
+  - componentstatuses
+  - endpoints
+  - storageclasses
+  - priorityclasses
+  - clusterissuers
+  - podsecuritypolicies
+  - persistentvolumes
+  - replicasets
+  - cronjobs
+  - daemonsets
+  - jobs
+  - statefulsets
+  verbs:
+  - list
+  - get
+  - watch
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: nirmata:cluster-registrator
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: nirmata:cluster-registrator
+subjects:
+- kind: ServiceAccount
+  name: nirmata-cluster-registrator
+  namespace: {{ .Values.namespace }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: nirmata:cluster-registrator-readonly
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: nirmata:cluster-registrator-nirmata-readonly
+subjects:
+- kind: ServiceAccount
+  name: nirmata-cluster-registrator
+  namespace: {{ .Values.namespace }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: nirmata:cluster-registrator-nirmata-readonly
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: view
+subjects:
+- kind: ServiceAccount
+  name: nirmata-cluster-registrator
+  namespace: {{ .Values.namespace }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: nirmata:cluster-registrator-ns-admin
+  namespace: nirmata
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: admin
+subjects:
+- kind: ServiceAccount
+  name: nirmata-cluster-registrator
+  namespace: {{ .Values.namespace }}
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: nirmata-cluster-registrator
+  namespace: {{ .Values.namespace }}
+  labels: {{ include "nirmata-cluster-registrator-chart.labels" . | nindent 4 }}
+spec:
+  template:
+    spec:
+      containers:
+      - name: cluster-registrator
+        image: ghcr.io/nirmata/cluster-registrator:{{ .Values.imageTag }}
+        args:
+        - "--cluster-name"
+        - "{{ .Values.cluster.name }}"
+        {{- if .Values.apiTokenSecret }}
+        - "--token-secret"
+        - "{{ .Values.apiTokenSecret }}"
+        {{- end }}
+        env:
+        - name: CLUSTER_NAME
+          value: "{{ .Values.cluster.name }}"
+        - name: NIRMATA_TOKEN
+          value: "{{ .Values.apiToken }}"
+        - name: NIRMATA_URL
+          value: "{{ .Values.nirmataURL }}"
+        - name: NIRMATA_CLUSTER_TYPE
+          value: "{{ .Values.cluster.type }}"
+        - name: HTTP_PROXY
+          value: "{{ .Values.proxy.httpProxy }}"
+        - name: HTTPS_PROXY
+          value: "{{ .Values.proxy.httpsProxy }}"
+        - name: NO_PROXY
+          value: "{{ .Values.proxy.noProxy }}"
+        - name: TLS_CERT
+          value: "{{ .Values.tlsCert }}"
+        - name: APIKEY_SECRET_NAMESPACE
+          value: "{{ .Release.Namespace }}"
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - "ALL"
+          readOnlyRootFilesystem: true
+          runAsGroup: 1000
+          runAsNonRoot: true
+          runAsUser: 1000
+          seccompProfile:
+            type: "RuntimeDefault"
+      serviceAccountName: nirmata-cluster-registrator
+      restartPolicy: Never
+  backoffLimit: 0
+---
+{{- if not .Values.createNs }}
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: delete-resources
+rules:
+- apiGroups: ["rbac.authorization.k8s.io"]
+  resources: ["clusterrolebindings", "clusterroles"]
+  verbs: ["delete"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: delete-resources-binding
+subjects:
+- kind: ServiceAccount
+  name: nirmata-cluster-registrator
+  namespace: {{ .Values.namespace }}
+roleRef:
+  kind: ClusterRole
+  name: delete-resources
+  apiGroup: rbac.authorization.k8s.io
+---
+{{- end }}
