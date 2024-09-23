@@ -6,11 +6,10 @@ nirmataURL: "https://nirmata.io"
 createNs: false
 
 cluster:
-  name: test-kyverno-onbording
+  name: test-kyverno-onboarding
   type: "default-policy-manager-type"
 
-#apiToken:
-apiTokenSecret: "api-secret"
+apiTokenSecret: api-secret
 
 nirmataURL: "https://nirmata.io"
 
