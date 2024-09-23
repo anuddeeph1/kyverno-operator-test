@@ -29,6 +29,6 @@ imageTag: v0.1.4
 # we don't provide read-write perms even if yamls downloaded from service need that.
 # Currently simple read-only and read-write flag, but we could have more shorthands for
 # variations such as: * on polexes but read-only on policy-reports, etc.
-controllerPerms: 'read-write'
+controllerPerms: 'read-only'
 
 namespace: nirmata
